@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zmelkoov Plus</title>
+    <!-- Tailwind CSS za odziven in moderen dizajn -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js za prikaz kumulativnega grafa -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        zmelkoow: {
+                            orange: '#f26b21',
+                            blue: '#1f69a9',
+                            yellow: '#ffe159',
+                            dark: '#2d2d2d'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Comic Sans MS"', 'Verdana', 'sans-serif'], // Malce bolj zabaven/funky font
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #fff9e6; overflow-x: hidden; }
+        .tile-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .tile-hover:hover { transform: translateY(-5px) rotate(-1deg); box-shadow: 0 10px 25px rgba(242, 107, 33, 0.4); }
+        .btn-jump { transition: transform 0.1s; }
+        .btn-jump:active { transform: scale(0.95); }
+        
+        /* Skrivanje strani */
+        .page { display: none; min-height: 100vh; }
+        .page.active { display: block; }
+        
+        /* Za PDF iframing na mobilcih */
+        .pdf-container { height: calc(100vh - 80px); width: 100%; }
+    </style>
+</head>
+<body class="text-zmelkoow-dark">
+
+    <!-- GLAVNA STRAN -->
+    <div id="page-home" class="page active max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Banner -->
+        <div class="bg-zmelkoow-yellow rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row mb-12 border-4 border-zmelkoow-orange relative">
+            <!-- Trakec / okras -->
+            <div class="absolute top-0 right-0 bg-red-600 text-white font-bold py-1 px-10 transform translate-x-8 translate-y-4 rotate-45 shadow-md">
+                NOVO!
+            </div>
+            
+            <!-- Slika levo -->
+            <div class="md:w-5/12 bg-white flex items-center justify-center border-b-4 md:border-b-0 md:border-r-4 border-zmelkoow-orange p-4">
+                <img src="Zmelkoowplus.jpg" alt="Zmelkoow Plus Pločevinka" class="max-h-80 object-contain drop-shadow-lg rounded-xl" onerror="this.src='https://via.placeholder.com/400x300.png?text=Slika+ni+najdena';">
+            </div>
+            
+            <!-- Besedilo in gumbi desno -->
+            <div class="md:w-7/12 p-8 flex flex-col justify-center relative bg-gradient-to-br from-zmelkoow-yellow to-orange-200">
+                <h1 class="text-5xl md:text-6xl font-black text-zmelkoow-blue mb-2 drop-shadow-md tracking-tighter uppercase">Zmelkoov Plus</h1>
+                <h2 class="text-xl md:text-2xl font-bold text-zmelkoow-orange mb-8 leading-tight">Organska pridelava.<br>Brez glutena in dodatnih konzervansov.</h2>
+                
+                <div class="flex flex-wrap gap-4 mt-auto">
+                    <button onclick="navigate('page-booklet')" class="btn-jump bg-zmelkoow-orange hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-orange-800 flex items-center gap-2 text-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                        KNJIGICA
+                    </button>
+                    <a href="https://www.youtube.com/@ZmelkoowOfficial" target="_blank" class="btn-jump bg-zmelkoow-blue hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-blue-900 flex items-center gap-2 text-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><path fill="white" d="M9.75 15.02l6.75-3.27-6.75-3.27v6.54z"/></svg>
+                        YOUTUBE
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seznam komadov -->
+        <h3 class="text-3xl font-bold text-center mb-8 text-zmelkoow-blue uppercase tracking-widest border-b-4 border-zmelkoow-orange pb-2 max-w-md mx-auto">Vsebina konzerve</h3>
+        <div id="songs-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Generirano z JS -->
+        </div>
+    </div>
+
+    <!-- STRAN: KNJIGICA -->
+    <div id="page-booklet" class="page max-w-6xl mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-4 bg-zmelkoow-blue text-white p-4 rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold">Knjigica (PDF)</h2>
+            <button onclick="navigate('page-home')" class="bg-white text-zmelkoow-blue hover:bg-gray-200 font-bold py-2 px-6 rounded-lg shadow btn-jump">Nazaj</button>
+        </div>
+        <div class="bg-white rounded-xl shadow-2xl p-2 border-4 border-zmelkoow-yellow">
+            <iframe src="knjigica_zmelkoow_plus.pdf" class="pdf-container rounded-lg" title="Zmelkoow Plus Knjigica">
+                Vaš brskalnik ne podpira predogleda PDF datotek. <a href="knjigica_zmelkoow_plus.pdf" class="text-blue-500 underline">Prenesite PDF tukaj.</a>
+            </iframe>
+        </div>
+    </div>
+
+    <!-- STRAN: STATISTIKA -->
+    <div id="page-stats" class="page max-w-6xl mx-auto px-4 py-6 relative">
+        <div class="flex items-center justify-between mb-6 bg-zmelkoow-dark text-white p-4 rounded-xl shadow-md border-b-4 border-zmelkoow-orange">
+            <h2 class="text-2xl font-bold flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                Strogo Tajna Statistika
+            </h2>
+            <button onclick="navigate('page-home')" class="bg-zmelkoow-orange hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg shadow btn-jump">Nazaj</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Hitra statistika -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-gray-200 flex flex-col justify-center items-center text-center">
+                <h3 class="text-gray-500 font-bold uppercase tracking-wide mb-2">Skupaj prenosov (od začetka)</h3>
+                <p id="stat-total" class="text-6xl font-black text-zmelkoow-blue">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-gray-200 flex flex-col justify-center items-center text-center">
+                <h3 class="text-gray-500 font-bold uppercase tracking-wide mb-2">Prenosi (zadnjih 10 dni)</h3>
+                <p id="stat-10days" class="text-6xl font-black text-zmelkoow-orange">0</p>
+            </div>
+        </div>
+
+        <!-- Graf -->
+        <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-gray-200 mb-8">
+            <h3 class="text-xl font-bold text-zmelkoow-dark mb-4">Kumulativni graf prenosov</h3>
+            <div class="relative h-64 w-full">
+                <canvas id="statsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabela posameznih pesmi -->
+        <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-gray-200">
+            <h3 class="text-xl font-bold text-zmelkoow-dark mb-4">Prenosi po komadih</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left">
+                    <thead class="bg-gray-100 text-gray-600 uppercase text-sm border-b-2 border-gray-300">
+                        <tr>
+                            <th class="py-3 px-4">Komad</th>
+                            <th class="py-3 px-4 text-right">Število prenosov</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stat-songs-list" class="divide-y divide-gray-200">
+                        <!-- Generirano z JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALNO OKNO ZA GESLO -->
+    <div id="password-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center border-4 border-zmelkoow-orange">
+            <h3 class="text-2xl font-bold text-zmelkoow-dark mb-4">Dostop omejen!</h3>
+            <p class="text-gray-600 mb-6">Prosim, vnesite strogo tajno geslo za dostop do statistike.</p>
+            <input type="password" id="password-input" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:border-zmelkoow-blue text-center text-xl" placeholder="Geslo...">
+            <div class="flex gap-2">
+                <button onclick="checkPassword()" class="flex-1 bg-zmelkoow-blue hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md btn-jump">Odkleni</button>
+                <button onclick="closePasswordModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-4 rounded-lg shadow-md btn-jump">Prekliči</button>
+            </div>
+            <p id="password-error" class="text-red-500 font-bold mt-4 hidden">Napačno geslo! Zmelkoow te gleda.</p>
+        </div>
+    </div>
+
+    <!-- SKRITI GUMB ZA STATISTIKO (Pikica spodaj desno) -->
+    <div onclick="openPasswordModal()" class="fixed bottom-3 right-3 w-4 h-4 rounded-full bg-zmelkoow-dark opacity-10 hover:opacity-100 cursor-pointer shadow-lg hover:w-8 hover:h-8 transition-all duration-300 flex items-center justify-center text-transparent hover:text-white" title="Statistika">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden hover:block"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+    </div>
+
+    <script>
+        // PODATKI O KOMADIH
+        const songs = [
+            { id: 'se_dobro', title: 'Še dobro', file: 'ZMELKOOW - Se dobro - MP3 MASTER_320kbps.mp3', yt: 'https://www.youtube.com/watch?v=M2Ts9L-OV6c' },
+            { id: 'realni_svet', title: 'Realni svet', file: 'ZMELKOOW - Realni svet - MP3 MASTER_320kbps.mp3', yt: 'https://www.youtube.com/watch?v=064Vw0fDYa0' },
+            { id: 'rogljicek', title: 'Rogljiček', file: 'ZMELKOOW - Rogljicek -  MP3 MASTER_320kbps.mp3', yt: null },
+            { id: 'pismo_komarju', title: 'Pismo Komarju', file: 'ZMELKOOW - Pismo Komarju - MP3 MASTER_320kbps.mp3', yt: 'https://www.youtube.com/watch?v=8eGgUUYKvfg' },
+            { id: 'polja_plevela', title: 'Polja plevela', file: 'ZMELKOOW - Polja plevela - MP3 MASTER_320kbps.mp3', yt: null },
+            { id: 'patetika', title: 'Patetika', file: 'ZMELKOOW - Patetika - MP3 MASTER_320kbps.mp3', yt: null },
+            { id: 'sempre_sergio', title: 'Sempre Sergio', file: 'ZMELKOOW - Sempre Sergio - MP3 MASTER_320kbps.mp3', yt: 'https://www.youtube.com/watch?v=9OPGaZvdsMU' },
+            { id: 'spomenik', title: 'Spomenik', file: 'ZMELKOOW - Spomenik - MP3 MASTER_320kbps.mp3', yt: null },
+            { id: 'ti_zlomka', title: 'Ti zlomka', file: 'ZMELKOOW - Ti zlomka -  MP3 MASTER_320kbps.mp3', yt: null },
+            { id: 'samo_zase', title: 'Samo zase kot prase', file: 'ZMELKOOW - Samo zase kot prase - MP3 MASTER_320kbps.mp3', yt: 'https://www.youtube.com/watch?v=cBMUN8vXZMo' },
+            { id: 'pozitiva', title: 'Pozitiva?', file: 'ZMELKOOW - Pozitiva - MP3 MASTER_320kbps.mp3', yt: null },
+            { id: 'lisjak', title: 'Lisjak', file: 'ZMELKOOW - Lisjak - MP3 MASTER_320kbps.mp3', yt: null }
+        ];
+
+        let statsChartInstance = null;
+
+        // INICIALIZACIJA STRANI
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSongs();
+            initMockStats(); // Naložimo fejk zgodovino, če aplikacijo odpremo prvič
+            
+            // Poslušalec za enter na geslu
+            document.getElementById('password-input').addEventListener('keypress', function(e) {
+                if(e.key === 'Enter') checkPassword();
+            });
+        });
+
+        // RISANJE KARTIC ZA KOMADE
+        function renderSongs() {
+            const container = document.getElementById('songs-container');
+            container.innerHTML = '';
+
+            songs.forEach((song, index) => {
+                const ytBtn = song.yt ? `
+                    <a href="${song.yt}" target="_blank" class="w-10 h-10 flex-shrink-0 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center transition-colors btn-jump" title="Glej na YouTubu">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><path fill="white" d="M9.75 15.02l6.75-3.27-6.75-3.27v6.54z"/></svg>
+                    </a>` : '';
+
+                const cardHtml = `
+                    <div class="bg-white rounded-2xl p-5 shadow-lg border-2 border-transparent hover:border-zmelkoow-yellow tile-hover flex flex-col justify-between h-full relative overflow-hidden group">
+                        <!-- Okrasna številka v ozadju -->
+                        <div class="absolute -top-4 -right-4 text-9xl font-black text-gray-100 opacity-50 z-0 pointer-events-none group-hover:scale-110 transition-transform">${index + 1}</div>
+                        
+                        <div class="relative z-10 mb-4">
+                            <h4 class="text-xl font-bold text-zmelkoow-dark mb-1">${song.title}</h4>
+                            <p class="text-xs text-gray-400 truncate" title="${song.file}">${song.file}</p>
+                        </div>
+                        
+                        <!-- Avdio predvajalnik za hitro poslušanje -->
+                        <audio controls class="w-full h-8 mb-4 relative z-10" preload="none">
+                            <source src="${song.file}" type="audio/mpeg">
+                        </audio>
+
+                        <div class="flex gap-2 relative z-10 w-full mt-auto">
+                            <button onclick="downloadSong('${song.id}', '${song.file}')" class="flex-1 bg-zmelkoow-orange hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-1 btn-jump text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                Prenesi
+                            </button>
+                            ${ytBtn}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // UPRAVLJANJE STRANI
+        function navigate(pageId) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // PRENOS IN STATISTIKA
+        async function downloadSong(songId, fileName) {
+            // Zapišemo download v localStorage
+            let db = JSON.parse(localStorage.getItem('zmelkoow_db') || '[]');
+            db.push({ id: songId, time: Date.now() });
+            localStorage.setItem('zmelkoow_db', JSON.stringify(db));
+
+            try {
+                // Uporabimo Fetch API, da datoteko prenesemo kot Blob. 
+                // To prisili brskalnik, da shrani datoteko namesto da jo odpre/predvaja.
+                const response = await fetch(fileName);
+                if (!response.ok) throw new Error('Napaka pri prenosu');
+                
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = fileName; // Ime datoteke ob shranjevanju
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                // Počistimo začasni URL
+                window.URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error("Prenos preko fetcha ni uspel, uporabljam klasično metodo:", error);
+                // Fallback, če fetch spodleti (npr. zaradi varnostnih nastavitev v brskalniku)
+                const a = document.createElement('a');
+                a.href = fileName;
+                a.download = fileName;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+
+        function initMockStats() {
+            // Ustvarimo lažne podatke za zadnjih 30 dni, če statistika še ne obstaja (da graf ni prazen)
+            if (!localStorage.getItem('zmelkoow_db')) {
+                let db = [];
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+                
+                songs.forEach(song => {
+                    const downloads = Math.floor(Math.random() * 80) + 20; // 20 - 100 random prenosov
+                    for (let i = 0; i < downloads; i++) {
+                        const randomTime = now - Math.floor(Math.random() * 30 * oneDay);
+                        db.push({ id: song.id, time: randomTime });
+                    }
+                });
+                
+                // Sortiramo časovno od najstarejšega do najnovejšega
+                db.sort((a, b) => a.time - b.time);
+                localStorage.setItem('zmelkoow_db', JSON.stringify(db));
+            }
+        }
+
+        // LOGIKA ZA GESLO
+        function openPasswordModal() {
+            document.getElementById('password-input').value = '';
+            document.getElementById('password-error').classList.add('hidden');
+            document.getElementById('password-modal').classList.remove('hidden');
+            document.getElementById('password-input').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            if (input.toLowerCase() === 'cikopajo') {
+                closePasswordModal();
+                loadStatsAndShow();
+            } else {
+                document.getElementById('password-error').classList.remove('hidden');
+            }
+        }
+
+        // PRIKAZ STATISTIKE
+        function loadStatsAndShow() {
+            const db = JSON.parse(localStorage.getItem('zmelkoow_db') || '[]');
+            const now = Date.now();
+            const tenDaysAgo = now - (10 * 24 * 60 * 60 * 1000);
+
+            // Skupni prenosi
+            document.getElementById('stat-total').innerText = db.length;
+            
+            // Zadnjih 10 dni
+            const last10DaysCount = db.filter(item => item.time >= tenDaysAgo).length;
+            document.getElementById('stat-10days').innerText = last10DaysCount;
+
+            // Prenosi po komadih
+            const countsPerSong = {};
+            songs.forEach(s => countsPerSong[s.id] = { title: s.title, count: 0 });
+            db.forEach(item => {
+                if(countsPerSong[item.id]) countsPerSong[item.id].count++;
+            });
+
+            // Sortiramo komade po številu prenosov padajoče
+            const sortedSongs = Object.values(countsPerSong).sort((a, b) => b.count - a.count);
+            
+            const tbody = document.getElementById('stat-songs-list');
+            tbody.innerHTML = '';
+            sortedSongs.forEach((s, i) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 border-b border-gray-100 font-medium text-gray-800">
+                        <span class="text-gray-400 w-6 inline-block">${i+1}.</span> ${s.title}
+                    </td>
+                    <td class="py-3 px-4 border-b border-gray-100 text-right font-bold text-zmelkoow-blue">${s.count}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Render Grafa
+            renderChart(db);
+            
+            navigate('page-stats');
+        }
+
+        function renderChart(db) {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            
+            // Uničimo prejšnji graf, če obstaja (ob večkratnem vstopu v stran)
+            if (statsChartInstance) {
+                statsChartInstance.destroy();
+            }
+
+            // Grupiranje podatkov po dnevih za zadnjih 30 dni za kumulativen prikaz
+            const now = new Date();
+            now.setHours(0,0,0,0);
+            const dataMap = {};
+            
+            // Pripravimo prazne dni za zadnjih 30 dni
+            for(let i=29; i>=0; i--) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                const dateString = `${d.getDate()}.${d.getMonth()+1}.`;
+                dataMap[dateString] = 0;
+            }
+
+            // Napolnimo prenose po dnevih
+            const startingTimeLimit = now.getTime() - (29 * 24 * 60 * 60 * 1000);
+            
+            // Filter prenosov samo za zadnjih 30 dni za graf
+            const recentDb = db.filter(item => item.time >= startingTimeLimit);
+            
+            recentDb.forEach(item => {
+                const d = new Date(item.time);
+                const dateString = `${d.getDate()}.${d.getMonth()+1}.`;
+                if(dataMap[dateString] !== undefined) {
+                    dataMap[dateString]++;
+                }
+            });
+
+            // Naredimo kumulativno
+            let cumulative = 0;
+            const labels = [];
+            const dataValues = [];
+            
+            // Če je pred 30 dnevi že obstajal nek znesek, ga moramo prišteti bazi!
+            // Da bo res kumulativen od začetka časa, moramo najti count prenosov do pred 30 dni.
+            let baseCount = db.filter(item => item.time < startingTimeLimit).length;
+            cumulative = baseCount;
+
+            Object.keys(dataMap).forEach(key => {
+                labels.push(key);
+                cumulative += dataMap[key];
+                dataValues.push(cumulative);
+            });
+
+            // Narišemo
+            statsChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Skupaj prenosov (Kumulativno)',
+                        data: dataValues,
+                        borderColor: '#f26b21', // Zmelkoow orange
+                        backgroundColor: 'rgba(242, 107, 33, 0.2)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#1f69a9',
+                        pointRadius: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: false,
+                            grid: { color: '#e5e7eb' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
