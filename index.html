@@ -216,10 +216,12 @@
                             <p class="text-xs text-gray-400 truncate" title="${song.file}">${song.file}</p>
                         </div>
                         
-                        <!-- Avdio predvajalnik za hitro poslušanje -->
-                        <audio controls class="w-full h-8 mb-4 relative z-10" preload="none">
-                            <source src="${song.file}" type="audio/mpeg">
-                        </audio>
+                        <!-- Avdio predvajalnik za hitro poslušanje (odstranjen h-8 zaradi iOS Safari hrošča) -->
+                        <div class="w-full relative z-10 mb-5">
+                            <audio controls class="w-full outline-none" preload="none">
+                                <source src="${song.file}" type="audio/mpeg">
+                            </audio>
+                        </div>
 
                         <div class="flex gap-2 relative z-10 w-full mt-auto">
                             <button onclick="downloadSong('${song.id}', '${song.file}')" class="flex-1 bg-zmelkoow-orange hover:bg-orange-600 text-white font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-1 btn-jump text-sm">
